@@ -1,6 +1,5 @@
 import os
 import tensorflow as tf
-from networks import ResNetClassifier
 import ut as ut
 from ut import normalize_tf, sobolev_norm, normalize_np
 
@@ -11,11 +10,11 @@ def data_augmentation_default(gt, adv):
 
 class AdversarialRegulariser(object):
     # sets up the network architecture
-    def __init__(self, path, IMAGE_SIZE, data_augmentation=data_augmentation_default, s=0.0, cutoff=20.0, gamma=1.0, lmb=10.0):
+    def __init__(self, path, IMAGE_SIZE, NETWORK, data_augmentation=data_augmentation_default, s=0.0, cutoff=20.0, gamma=1.0, lmb=10.0):
         # IMAGE SIZE in format (batch, 1,2,3, channel)
 
         self.path = path
-        self.network = ResNetClassifier()
+        self.network = NETWORK()
         self.sess = tf.InteractiveSession()
         self.run_options = tf.RunOptions(report_tensor_allocations_upon_oom = True)
 

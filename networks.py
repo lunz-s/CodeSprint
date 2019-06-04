@@ -55,6 +55,48 @@ class ConvNetClassifier(network):
         return output
 
 
+class AlexNet_3D(network):
+    # classical classifier with convolutional layers with strided convolutions and two dense layers at the end
+
+    def net(self, x_in):
+        mult_factor = 2
+        padding="VALID"
+        # convolutional network for feature extraction
+        conv1 = tf.layers.conv3d(inputs=x_in, filters=64*mult_factor, kernel_size=11, padding=padding, strides=4,
+                                 activation=lrelu, reuse=tf.AUTO_REUSE, name='conv1')
+        pool1 = meanpool(conv1)
+        conv2 = tf.layers.conv3d(inputs=pool1, filters=192*mult_factor, kernel_size=5, padding=padding,
+                                 activation=lrelu, reuse=tf.AUTO_REUSE, name='conv2')
+
+        conv3 = tf.layers.conv3d(inputs=conv2, filters=384*mult_factor, kernel_size=[3, 3, 3], padding=padding,
+                                 activation=lrelu, reuse=tf.AUTO_REUSE, name='conv3')
+
+        conv4 = tf.layers.conv3d(inputs=conv3, filters=384*mult_factor, kernel_size=[3, 3, 3], padding=padding,
+                                 activation=lrelu, reuse=tf.AUTO_REUSE, name='conv4', strides=2)
+
+        conv5 = tf.layers.conv3d(inputs=conv4, filters=256*mult_factor, kernel_size=[3, 3, 3], padding=padding,
+                                 activation=lrelu, reuse=tf.AUTO_REUSE, name='conv5',)
+
+        conv6 = tf.layers.conv3d(inputs=conv5, filters=256*mult_factor, kernel_size=[3, 3, 3], padding=padding,
+                                 activation=lrelu, reuse=tf.AUTO_REUSE, name='conv6')
+
+        pool7=meanpool(conv6)
+
+        # reshape for classification
+        reshaped = tf.layers.flatten(pool7)
+
+        # dense layer for classification
+        dense = tf.layers.dense(inputs=reshaped, units=4000, activation=lrelu, reuse=tf.AUTO_REUSE, name='dense1')
+        dense2 = tf.layers.dense(inputs=dense, units=4000, activation=lrelu, reuse=tf.AUTO_REUSE, name='dense2')
+        output = tf.layers.dense(inputs=dense2, units=1, reuse=tf.AUTO_REUSE, name='dense3')
+
+        with tf.name_scope('post_process'):
+            base_case = tf.sqrt(tf.reduce_sum(x_in ** 2, axis=[1, 2, 3, 4]))
+
+        # Output network results
+        return base_case+output
+
+
 def apply_conv(x, filters=32, kernel_size=3, he_init=True, factor=2.0, cst_ini=False):
     if he_init:
         initializer = tf.contrib.layers.variance_scaling_initializer(factor=factor)
