@@ -1,20 +1,18 @@
 import os
 import tensorflow as tf
-from ClassFiles.networks import ResNetClassifier
-import ClassFiles.ut as ut
-from ClassFiles.ut import fftshift_tf, normalize_tf, sobolev_norm, normalize_np
+from networks import ResNetClassifier
+import ut as ut
+from ut import normalize_tf, sobolev_norm, normalize_np
 
 
-IMAGE_SIZE = (None, 96, 96, 96, 1)
-FOURIER_SIZE = (None, 96, 96, 49, 1)
-# Weight on gradient regularization
 
 def data_augmentation_default(gt, adv):
     return gt, adv
 
 class AdversarialRegulariser(object):
     # sets up the network architecture
-    def __init__(self, path, data_augmentation=data_augmentation_default, s=0.0, cutoff=20.0, gamma=1.0, lmb=10.0):
+    def __init__(self, path, IMAGE_SIZE, data_augmentation=data_augmentation_default, s=0.0, cutoff=20.0, gamma=1.0, lmb=10.0):
+        # IMAGE SIZE in format (batch, 1,2,3, channel)
 
         self.path = path
         self.network = ResNetClassifier()
@@ -23,10 +21,6 @@ class AdversarialRegulariser(object):
 
         ut.create_single_folder(self.path+'/Data')
         ut.create_single_folder(self.path + '/Logs')
-
-        # A Tensorflow Fourier transform
-        self.fourier_data = tf.placeholder(shape=FOURIER_SIZE, dtype=tf.complex64)
-        self.real_data = fftshift_tf(tf.expand_dims(tf.spectral.irfft3d(self.fourier_data[...,0]), axis=-1))
 
         ### Training the regulariser ###
         self.true = tf.placeholder(shape=IMAGE_SIZE, dtype=tf.float32)
@@ -104,13 +98,6 @@ class AdversarialRegulariser(object):
         # load existing saves
         self.load()
 
-    # Bypassing data augmentation for evaluation
-    def evaluate(self, fourierData):
-        fourierData = ut.unify_form(fourierData)
-        real_data = self.sess.run(self.real_data, feed_dict={self.fourier_data: fourierData})
-        normalized_data = normalize_np(real_data)
-        grad = self.sess.run(self.gradient, feed_dict={self.gen_normed: normalized_data})
-        return ut.adjoint_irfft(grad[0,...,0])
 
     def evaluate_real(self, real_data):
         normalized_data = normalize_np(real_data)
