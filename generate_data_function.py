@@ -23,6 +23,9 @@ def number_of_datasets(path):
 
 
 def generate_data(path, num_datasets, num_vox, num_angles, noise):
+    voxels = [num_vox, num_vox, num_vox]
+    src_rad = 10
+    det_rad = 0
     path_GT = path + '/GT/dataset'
     path_FDK = path + '/FDK/dataset'
     if not os.path.exists(path):
@@ -40,6 +43,9 @@ def generate_data(path, num_datasets, num_vox, num_angles, noise):
             rec = case.do_FDK()
             np.save(path_FDK + str(i), rec)
             print('Finsihed making dataset pair ' + str(i))
+    else: 
+        print('Already made the datasets')
+
 
             
 
