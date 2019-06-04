@@ -45,6 +45,19 @@ def generate_data(path, num_datasets, num_vox, num_angles, noise):
             print('Finsihed making dataset pair ' + str(i + nData))
     else: 
         print('Already made the datasets')
+        
+
+def get_batch(path, it):
+    path_GT = path + '/GT/dataset' + str(it)
+    path_FDK = path + '/FDK' + str(it)
+    if not os.path.exists(path_GT):
+        raise ValueError('Wrong path name')
+    
+    GT = np.load(path_GT)
+    FDK = np.load(path_FDK)
+    return GT, FDK
+
+    
 
 
             
