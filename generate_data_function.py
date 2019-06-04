@@ -48,8 +48,8 @@ def generate_data(path, num_datasets, num_vox, num_angles, noise):
         
 
 def get_batch(path, it):
-    path_GT = path + '/GT/dataset' + str(it)
-    path_FDK = path + '/FDK' + str(it)
+    path_GT = path + '/GT/dataset' + str(it) + '.npy'
+    path_FDK = path + '/FDK/dataset' + str(it) + '.npy'
     if not os.path.exists(path_GT):
         raise ValueError('Wrong path name')
     
