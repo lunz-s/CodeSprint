@@ -7,10 +7,6 @@ Created on Tue Jun  4 15:02:44 2019
 """
 
 import os
-import astra
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
-%env CUDA_VISIBLE_DEVICES
-astra.set_gpu_index((0))
 import CCB_class as CT
 import numpy as np
 import phantom_class as ph
