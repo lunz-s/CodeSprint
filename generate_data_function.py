@@ -38,11 +38,11 @@ def generate_data(path, num_datasets, num_vox, num_angles, noise):
         for i in range(num_datasets - nData):
             data_obj = ph.phantom(voxels, '22 Ellipses', num_angles, noise, 
                               src_rad, det_rad)
-            np.save(path_GT + str(i), data_obj.f)
+            np.save(path_GT + str(i + nData), data_obj.f)
             case = CT.CCB_CT(data_obj)
             rec = case.do_FDK()
-            np.save(path_FDK + str(i), rec)
-            print('Finsihed making dataset pair ' + str(i))
+            np.save(path_FDK + str(i + nData), rec)
+            print('Finsihed making dataset pair ' + str(i + nData))
     else: 
         print('Already made the datasets')
 
