@@ -64,36 +64,43 @@ class network(ABC):
 
 class ResNetL2(network):
 
-    m = np.array((128,128,128))
-    k = np.array((32,32,32))
+    # FoV 16*2+8*2+4*2+2*2+2+2+1 = 65
+
+    m = np.array((64,64,64))
+    k = np.array((65,65,65))
 
     def net(self, x_in):
         with tf.variable_scope('discriminator', reuse=tf.AUTO_REUSE):
             with tf.name_scope('pre_process'):
-                x0 = apply_conv(x_in, filters=16, kernel_size=3)
+                x_ini = apply_conv(x_in, filters=8, kernel_size=3)
+
+            with tf.name_scope('x0'):
+                x0 = resblock(x_ini, 16)
 
             with tf.name_scope('x1'):
-                x1 = resblock(x0, 16)  # 96
+                x1 = resblock(x0, 32)
 
             with tf.name_scope('x2'):
-                x2 = resblock(meanpool(x1), filters=32)  # 48
+                x2 = resblock(meanpool(x1), filters=32)  # 2
 
             with tf.name_scope('x3'):
-                x3 = resblock(meanpool(x2), filters=64)  # 24
+                x3 = resblock(meanpool(x2), filters=64)  # 4
 
             with tf.name_scope('x4'):
-                x4 = resblock(meanpool(x3), filters=128)  # 12
+                x4 = resblock(meanpool(x3), filters=128)  # 8
 
             with tf.name_scope('x5'):
-                x5 = resblock(meanpool(x4), filters=128)  # 6
+                x5 = resblock(meanpool(x4), filters=128)  # 16
 
-            with tf.name_scope('post_process'):
-                base_case = tf.sqrt(tf.reduce_sum(x_in ** 2, axis=[1, 2, 3, 4]))
+            with tf.name_scope('Global_averaging'):
+                x6 = tf.reduce_mean(x5, axis=(1,2,3))
 
             with tf.name_scope('flat'):
-                flat = tf.contrib.layers.flatten(x5)
-                flat = tf.layers.dense(flat, 128, activation=activation)
+                flat = tf.layers.dense(x6, 128, activation=activation)
                 flat = tf.layers.dense(flat, 1)
+
+            with tf.name_scope('l2_norm'):
+                base_case = tf.sqrt(tf.reduce_sum(x_in ** 2, axis=[1, 2, 3, 4]))
 
             with tf.name_scope('return'):
                 return base_case + flat
