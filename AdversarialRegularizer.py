@@ -98,8 +98,8 @@ class AdversarialRegulariser(object):
         self.load()
 
 
-    def evaluate_real(self, real_data):
-        normalized_data = normalize_np(real_data)
+    def evaluate(self, data):
+        normalized_data = normalize_np(data)
         grad = self.sess.run(self.gradient, feed_dict={self.gen_normed: normalized_data})
         return grad[0, ..., 0]
 

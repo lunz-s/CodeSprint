@@ -22,7 +22,7 @@ def slice_up(image, m, k):
     """
     :param image: input 3D image as np array
     :param m: window size as numpy vector (size_x, size_y, size_z)
-    :param k: Filed of vies size as numpy vector (size_x, size_y, size_z)
+    :param k: Field of view size as numpy vector (size_x, size_y, size_z)
     :return: dictionnary with image slices
     """
     SIZE = np.array(image.shape)
@@ -39,7 +39,7 @@ def slice_up(image, m, k):
 def build_up(slices, m, SIZE):
     """
     :param slices: dictionnary with gradients. Same format as output of 'slice_up'
-    :param m: see slice_up
+    :param m: window size as numpy vector (size_x, size_y, size_z)
     :param SIZE: 3D image size as numpy vector (size_x, size_y, size_z)
     :return: 3D image of size SIZE
     """
@@ -48,7 +48,13 @@ def build_up(slices, m, SIZE):
         res[ulf[0]:(ulf[0]+m[0]), ulf[1]:(ulf[1]+m[1]), ulf[2]:(ulf[2]+m[2])] = im
     return res
 
-def stupid_gradient(slices, k, m):
+def valid_gradient(slices, k, m):
+    """
+    :param slices: dictionnnary with slices. Same format as output of 'slice_up'
+    :param k: Field of view size as numpy vector (size_x, size_y, size_z)
+    :param m: window size as numpy vector (size_x, size_y, size_z)
+    :return: The valid part of the gradient map
+    """
     res = {}
     for ulf, im in slices.items():
         res[ulf]=im[k[0]:(m[0]+k[0]), k[1]:(m[1]+k[1]), k[2]:(m[2]+k[2])]
@@ -60,7 +66,7 @@ if __name__== '__main__':
     m_out = np.array([128, 128, 128])
     k_out = np.array([32, 32, 32])
     sliced = slice_up(image_out, m_out, k_out)
-    gradients = stupid_gradient(sliced, k_out, m_out)
+    gradients = valid_gradient(sliced, k_out, m_out)
     image_recon = build_up(gradients, m_out, SIZE_out)
     misfit= np.sum(np.square(image_out - image_recon))
     assert misfit == 0.0

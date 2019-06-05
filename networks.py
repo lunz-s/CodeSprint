@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.python.keras.layers import UpSampling3D
 from abc import ABC, abstractmethod
 
 def lrelu(x):
@@ -130,11 +129,6 @@ def meanpool(x):
         )
 
 
-def upsample(x):
-    l = tf.keras.layers.UpSampling3D(size=(2, 2, 2))
-    with tf.name_scope('upsample'):
-        return l(x)
-
 
 def resblock(x, filters, he_init=False, factor=2.0):
     with tf.name_scope('resblock'):
@@ -212,46 +206,6 @@ class ResNetClassifier(network):
             with tf.name_scope('return'):
                 return flat
 
-
-class UNet(network):
-
-    def net(self, x_in):
-        with tf.variable_scope('UNet', reuse=tf.AUTO_REUSE):
-            with tf.name_scope('pre_process'):
-                x0 = apply_conv(x_in, filters=16, kernel_size=3, he_init=True, factor=1e-2)
-
-            with tf.name_scope('x1'):
-                x1 = resblock(x0, 16, he_init=True, factor=1e-2)  # 96
-
-            with tf.name_scope('x2'):
-                x2 = resblock(meanpool(x1), filters=32, he_init=True, factor=1e-2)  # 48
-
-            with tf.name_scope('x3'):
-                x3 = resblock(meanpool(x2), filters=64, he_init=True, factor=1e-2)  # 24
-
-            with tf.name_scope('x4'):
-                x4 = resblock(meanpool(x3), filters=64, he_init=True, factor=1e-2)  # 12
-
-            with tf.name_scope('x5'):
-                x5 = resblock(meanpool(x4), filters=128, he_init=True, factor=1e-2)  # 6
-
-            with tf.name_scope('x6'):
-                x6 = resblock(upsample(x5), filters=64, he_init=True, factor=1e-2)  # 12
-
-            with tf.name_scope('x7'):
-                x7 = resblock(upsample(tf.concat([x4, x6], -1)), filters=64, he_init=True, factor=1e-2)  # 24
-
-            with tf.name_scope('x8'):
-                x8 = resblock(upsample(tf.concat([x3, x7], -1)), filters=32, he_init=True, factor=1e-2)  # 48
-
-            with tf.name_scope('x9'):
-                x9 = resblock(upsample(tf.concat([x2, x8], -1)), filters=16, he_init=True, factor=1e-2)  # 96
-
-            with tf.name_scope('x10'):
-                x10 = resblock(tf.concat([x1, x9], -1), filters=16, he_init=True, factor=1e-2)
-
-            with tf.name_scope('post_process'):
-                return apply_conv(x10, filters=1, kernel_size=3, he_init=True, factor=1e-2)
 
 
 
