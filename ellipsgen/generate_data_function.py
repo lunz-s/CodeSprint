@@ -7,9 +7,9 @@ Created on Tue Jun  4 15:02:44 2019
 """
 
 import os
-import CCB_class as CT
+from . import CCB_class as CT
 import numpy as np
-import phantom_class as ph
+from . import phantom_class as ph
 
 
 def number_of_datasets(path):
