@@ -48,7 +48,7 @@ def build_up(slices, m, SIZE):
         res[ulf[0]:(ulf[0]+m[0]), ulf[1]:(ulf[1]+m[1]), ulf[2]:(ulf[2]+m[2])] = im
     return res
 
-def valid_gradient(slices, k, m):
+def valid_gradient(slices, m, k):
     """
     :param slices: dictionnnary with slices. Same format as output of 'slice_up'
     :param k: Field of view size as numpy vector (size_x, size_y, size_z)

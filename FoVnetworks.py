@@ -1,5 +1,6 @@
 import tensorflow as tf
 from abc import ABC, abstractmethod
+import numpy as np
 
 def lrelu(x):
     # leaky rely
@@ -52,8 +53,8 @@ class network(ABC):
 
     # The FoV k and the maximal size of a patch fitting on a GPU m
     # Override with network specifics in the subclass
-    m = (0,0,0)
-    k = (0,0,0)
+    m = np.array((0,0,0))
+    k = np.array((0,0,0))
 
     # Method defining the neural network architecture, returns computation result. Use reuse=tf.AUTO_REUSE.
     @abstractmethod
@@ -63,8 +64,8 @@ class network(ABC):
 
 class ResNetL2(network):
 
-    m = (128,128,128)
-    k = (32,32,32)
+    m = np.array((128,128,128))
+    k = np.array((32,32,32))
 
     def net(self, x_in):
         with tf.variable_scope('discriminator', reuse=tf.AUTO_REUSE):

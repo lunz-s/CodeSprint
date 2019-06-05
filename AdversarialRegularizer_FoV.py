@@ -1,6 +1,7 @@
 from AdversarialRegularizer import AdversarialRegulariser
 import slicing_methods as sl
 import numpy as np
+import random
 
 class AdversarialSplitting(object):
 
@@ -19,23 +20,39 @@ class AdversarialSplitting(object):
         ground_slices = sl.slice_up(groundTruth, self.m, self.k)
         adv_slices = sl.slice_up(adversarial, self.m, self.k)
         size = ground_slices[(0,0,0)].shape
-        bs = self.batch_size+size
 
+        ulfs = list(ground_slices.keys())
+        length = len(ulfs)
         k = 0
-        gt_batch = np.zeros(shape=bs)
-        adv_batch = np.zeros(shape=bs)
-        for ulf, im_true in ground_slices:
-            im_adv = adv_slices(ulf)
-            if k<self.batch_size:
-                gt_batch[k,...] = im_true
-                adv_batch[k,...] = im_adv
-                k =+ 1
-            else:
-                self.regularizer.train(gt_batch, adv_batch, learning_rate)
-                k=0
+        remaining = self.batch_size + 1
+        while remaining > self.batch_size:
+            remaining = length - k
+            local_bs = min(self.batch_size, remaining)
+            bs = (local_bs,) + size
+            gt_batch = np.zeros(shape=bs)
+            adv_batch = np.zeros(shape=bs)
+            for i in range(local_bs):
+                gt_batch[i, ...] = ground_slices[ulfs[k]]
+                adv_batch[i, ...] = adv_slices[ulfs[k]]
+                k += 1
+            self.regularizer.train(gt_batch, adv_batch, learning_rate)
 
     def test(self, groundTruth, adversarial):
-        pass
+        ground_slices = sl.slice_up(groundTruth, self.m, self.k)
+        adv_slices = sl.slice_up(adversarial, self.m, self.k)
+        ulfs = list(ground_slices.keys())
+
+        size = ground_slices[(0, 0, 0)].shape
+        bs = (self.batch_size,) + size
+        gt_batch = np.zeros(shape=bs)
+        adv_batch = np.zeros(shape=bs)
+
+        for k in range(self.batch_size):
+            ulf = random.choice(ulfs)
+            gt_batch[k,...]=ground_slices[ulf]
+            adv_batch[k,...]=adv_slices[ulf]
+
+        self.regularizer.test(gt_batch, adv_batch)
 
     def evaluate(self, data):
         pass
