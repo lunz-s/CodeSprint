@@ -79,7 +79,7 @@ class AdversarialRegulariser(object):
                 l.append(tf.summary.image('GroundTruth', tf.reduce_max(self.true_normed, axis=3), max_outputs=1))
                 l.append(tf.summary.image('Gradient_Adv', tf.reduce_max(tf.abs(self.gradient), axis=3), max_outputs=1))
                 l.append(tf.summary.image('Gradient_GT', tf.reduce_max(tf.abs(gradient_track), axis=3), max_outputs=1))
-            slice = int(IMAGE_SIZE[3]/2)
+            slice = tf.cast(IMAGE_SIZE[3]/2.0, tf.int32)
             with tf.name_scope('Slice_Projection'):
                 l.append(tf.summary.image('Adversarial', self.gen_normed[..., slice, :], max_outputs=1))
                 l.append(tf.summary.image('GroundTruth', self.true_normed[..., slice, :], max_outputs=1))

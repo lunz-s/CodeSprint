@@ -5,10 +5,11 @@ import random
 
 class AdversarialSplitting(object):
 
-    def __init__(self, path, IMAGE_SIZE, NETWORK, BATCH_SIZE, s=0.0, cutoff=20.0, gamma=1.0, lmb=10.0):
+    def __init__(self, path, NETWORK, BATCH_SIZE, s=0.0, cutoff=20.0, gamma=1.0, lmb=10.0):
         self.m = NETWORK.m
         self.k = NETWORK.k
         self.batch_size = BATCH_SIZE
+        IMAGE_SIZE=(None, None, None, None, 1)
 
         self.regularizer = AdversarialRegulariser(path, IMAGE_SIZE, NETWORK, s=s, cutoff=cutoff, gamma=gamma, lmb=lmb)
 
@@ -55,7 +56,32 @@ class AdversarialSplitting(object):
         self.regularizer.test(gt_batch, adv_batch)
 
     def evaluate(self, data):
-        pass
+        full_size=data.shape
+
+        ground_slices = sl.slice_up(data, self.m, self.k)
+        size = ground_slices[(0, 0, 0)].shape
+
+        ulfs = list(ground_slices.keys())
+        length = len(ulfs)
+        k = 0
+        remaining = self.batch_size + 1
+        grads = {}
+        while remaining > self.batch_size:
+            remaining = length - k
+            local_bs = min(self.batch_size, remaining)
+            bs = (local_bs,) + size
+            batch = np.zeros(shape=bs)
+            for i in range(local_bs):
+                batch[i, ...] = ground_slices[ulfs[k + i]]
+
+            gradient_batch = self.regularizer.evaluate(batch)
+
+            for i in range(local_bs):
+                grads[ulfs[k + i]] = gradient_batch[i, ...]
+            k += local_bs
+
+        val_grads = sl.valid_gradient(grads, self.m, self.k)
+        return sl.build_up(val_grads, self.m, full_size)
 
     def save(self):
         self.regularizer.save()
