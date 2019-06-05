@@ -60,7 +60,7 @@ class AlexNet_3D(network):
 
     def net(self, x_in):
         mult_factor = 2
-        padding="VALID"
+        padding="same"
         # convolutional network for feature extraction
         conv1 = tf.layers.conv3d(inputs=x_in, filters=64*mult_factor, kernel_size=11, padding=padding, strides=4,
                                  activation=lrelu, reuse=tf.AUTO_REUSE, name='conv1')
