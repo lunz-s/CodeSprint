@@ -10,13 +10,13 @@ Original file is located at
 #Run on google colab
 #mount gdrive 
 import os
-from google.colab import drive
-drive.mount('/content/drive')
+# from google.colab import drive
+# drive.mount('/content/drive')
 
 #import libraries
 import numpy as np
 import matplotlib.pyplot as plt
-from kymatio import Scattering2D
+#from kymatio import Scattering2D
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
@@ -44,7 +44,7 @@ else:
 #specify the volume size
 in_channels = 8
 batch_size = 1
-image_size = 256 #256^3 volume
+image_size = 128 #128^3 volume
 num_classes = 2
 
 #num_of_filters_layer1 = 64
@@ -115,10 +115,10 @@ for batch in np.arange(n_batches):
   optimizer.step()
 
 # memory footprint support libraries/code
-!ln -sf /opt/bin/nvidia-smi /usr/bin/nvidia-smi
-!pip install gputil
-!pip install psutil
-!pip install humanize
+# !ln -sf /opt/bin/nvidia-smi /usr/bin/nvidia-smi
+# !pip install gputil
+# !pip install psutil
+# !pip install humanize
 import psutil
 import humanize
 import os

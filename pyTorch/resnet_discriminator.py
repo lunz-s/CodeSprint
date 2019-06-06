@@ -10,8 +10,8 @@ Original file is located at
 #Run on google colab
 #mount gdrive 
 import os
-from google.colab import drive
-drive.mount('/content/drive')
+# from google.colab import drive
+# drive.mount('/content/drive')
 
 #import libraries
 import numpy as np

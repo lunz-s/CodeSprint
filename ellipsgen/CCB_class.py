@@ -10,8 +10,8 @@ import numpy as np
 import odl
 import pylab
 
-from . import support_functions as sup
-from . import FDK_astra_backend as FDK_a
+import support_functions as sup
+import FDK_astra_backend as FDK_a
 # %%
 class CCB_CT:
     # %% Initialize the MR-FDK

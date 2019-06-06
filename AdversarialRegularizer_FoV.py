@@ -36,6 +36,7 @@ class AdversarialSplitting(object):
                 gt_batch[i, ...] = ground_slices[ulfs[k]]
                 adv_batch[i, ...] = adv_slices[ulfs[k]]
                 k += 1
+            print('Training on batch of size ' + str(bs))
             self.regularizer.train(gt_batch, adv_batch, learning_rate)
 
     def test(self, groundTruth, adversarial):

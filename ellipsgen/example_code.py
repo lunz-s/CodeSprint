@@ -11,7 +11,7 @@ import CCB_class as CT
 import numpy as np
 import astra
 # %%
-num_vox = 256
+num_vox = 1024
 voxels = [num_vox, num_vox, num_vox]
 angles = 360
 noise = None #['Poisson', 2 ** 14]

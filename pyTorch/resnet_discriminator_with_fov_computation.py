@@ -11,8 +11,8 @@ Original file is located at
 #mount gdrive 
 import matplotlib.pyplot as plt
 import os
-from google.colab import drive
-drive.mount('/content/drive')
+# from google.colab import drive
+# drive.mount('/content/drive')
 
 #import libraries
 import numpy as np
