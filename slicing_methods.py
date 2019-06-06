@@ -12,9 +12,7 @@ def getUpperLeftFront(SIZE, m):
     for dim in range(len(SIZE)):
         if coords[dim][-1] != max_coords[dim]:
             coords[dim].append(max_coords[dim])
-    output = []
-    for x, y, z in product(*coords):
-        output.append((x, y, z))
+    output = list(product(*coords))
     return output
 
 
