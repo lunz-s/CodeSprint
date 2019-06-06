@@ -26,7 +26,6 @@ def slice_up(image, m, k):
     SIZE = np.array(image.shape)
     im_pad = np.zeros(shape=SIZE + 2 * k)
     im_pad[k[0]:(k[0] + SIZE[0]), k[1]:(k[1] + SIZE[1]), k[2]:(k[2] + SIZE[2])] = image
-    print(im_pad.shape)
 
     ulfs = getUpperLeftFront(SIZE, m)
     out = {}
