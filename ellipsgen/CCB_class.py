@@ -151,8 +151,9 @@ class CCB_CT:
         space = self.reco_space
         mid = np.size(space, 0) // 2
         if clim == None:
-            clim = [np.min(self.phantom.f),
-                    np.max(self.phantom.f)]
+#             clim = [np.min(self.phantom.f),
+#                     np.max(self.phantom.f)]
+            clim = [np.min(rec), np.max(rec)]
         xy, xz, yz = [rec[:, :, mid], rec[:, mid, :], rec[mid, :, :]]
         fig, (ax1, ax2, ax3) = pylab.subplots(1, 3, figsize=[20, 6])
         fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1)

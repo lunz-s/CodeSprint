@@ -128,6 +128,23 @@ class phantom:
             if 'second' in kwargs:
                 np.random.set_state(seed_old)
             return reco_space, f 
+        elif self.PH == "Shepp-Logan":
+            # Size of the head is approximate 10 cm by 7.5 cm
+            self.volumesize = np.array([4, 4, 4], dtype='float32')
+            # Scale the detector correctly
+            self.detecsize = np.array([2 * self.volumesize[0], 
+                                       self.volumesize[1]])
+            # Make the reconstruction space
+            reco_space = odl.uniform_discr(min_pt=-self.volumesize,
+                                           max_pt=self.volumesize,
+                                            shape=voxels, dtype='float32',
+                                            interp='linear')
+            # Create the phantom:
+            # Note: We rescale the gray matter in the brain to realistic
+            # values but we use the scaled version of SL
+            f = odl.phantom.shepp_logan(reco_space,
+                                            True)/ 0.2 * 0.182
+            return reco_space, f
         else:
             raise ValueError('unknown `Phantom name` ({})'
                              ''.format(self.PH))
