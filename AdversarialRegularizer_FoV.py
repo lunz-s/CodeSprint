@@ -39,7 +39,7 @@ class AdversarialSplitting(object):
             print('Training on batch of size ' + str(bs))
             self.regularizer.train(gt_batch, adv_batch, learning_rate)
 
-    def test(self, groundTruth, adversarial):
+    def test(self, groundTruth, adversarial, random_slice=False):
         ground_slices = sl.slice_up(groundTruth, self.m, self.k)
         adv_slices = sl.slice_up(adversarial, self.m, self.k)
         ulfs = list(ground_slices.keys())
@@ -50,10 +50,14 @@ class AdversarialSplitting(object):
         adv_batch = np.zeros(shape=bs)
 
         for k in range(self.batch_size):
-            ulf = random.choice(ulfs)
+            if random_slice:
+                ulf = random.choice(ulfs)
+            else:
+                ulf=ulfs[k]
             gt_batch[k,...]=ground_slices[ulf]
             adv_batch[k,...]=adv_slices[ulf]
-
+        
+        print('Evaluation on batch of size ' + str(bs))
         self.regularizer.test(gt_batch, adv_batch)
 
     def evaluate(self, data):

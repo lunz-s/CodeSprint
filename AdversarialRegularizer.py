@@ -101,8 +101,9 @@ class AdversarialRegulariser(object):
 
     def evaluate(self, data):
         normalized_data = normalize_np(data)
+        normalized_data = ut.unify_form(normalized_data)
         grad = self.sess.run(self.gradient, feed_dict={self.gen_normed: normalized_data})
-        return grad[0, ..., 0]
+        return grad[..., 0]
 
     # trains the network with the groundTruths and adversarial exemples given. If Flag fourier_data is false,
     # the adversarial exemples are expected to be in real space
