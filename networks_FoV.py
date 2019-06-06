@@ -63,7 +63,7 @@ class network(ABC):
 
     
 class ResNetL2_local(network):
-        # FoV +8*2+4*2+2*2+2+2+1 = 17
+        # FoV 4*2+2*2+2+2+1 = 17
 
     m = np.array((64,64,64))
     k = np.array((17,17,17))

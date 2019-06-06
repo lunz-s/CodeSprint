@@ -27,11 +27,11 @@ class AdversarialRegulariser(object):
         self.learning_rate = tf.placeholder(dtype=tf.float32)
 
         # the network outputs
-        true, gen = data_augmentation(normalize_tf(self.true), normalize_tf(self.gen))
+        #true, gen = data_augmentation(normalize_tf(self.true), normalize_tf(self.gen))
 
         # The normalized inputs after data augmentation
-        self.true_normed=normalize_tf(true)
-        self.gen_normed=normalize_tf(gen)
+        self.true_normed=self.true #normalize_tf(true)
+        self.gen_normed=self.gen #normalize_tf(gen)
         
         self.gen_was = self.network.net(self.gen_normed)
         self.data_was = self.network.net(self.true_normed)
@@ -100,9 +100,9 @@ class AdversarialRegulariser(object):
 
 
     def evaluate(self, data):
-        normalized_data = normalize_np(data)
-        normalized_data = ut.unify_form(normalized_data)
-        grad = self.sess.run(self.gradient, feed_dict={self.gen_normed: normalized_data})
+        #normalized_data = normalize_np(data)
+        data = ut.unify_form(data)
+        grad = self.sess.run(self.gradient, feed_dict={self.gen_normed: data})
         return grad[..., 0]
 
     # trains the network with the groundTruths and adversarial exemples given. If Flag fourier_data is false,
